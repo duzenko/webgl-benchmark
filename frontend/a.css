@@ -1,0 +1,11 @@
+/** { 
+    margin: 0; padding: 0;
+}*/
+
+body, html { height:99%; }
+
+#glCanvas {
+    position:absolute;
+    width:99%;
+    height:99%;
+}
