@@ -3,8 +3,11 @@ main();
 var canvas;
 var gl;
 
-
 function render(now) {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height)
+    
     vp = gl.getParameter(gl.VIEWPORT);
     // Set clear color to black, fully opaque
     gl.clearColor(0.5, now % 1000 * 0.001, 0.0, 1.0);
