@@ -3,18 +3,31 @@ main();
 var canvas: HTMLCanvasElement
 var gl: WebGLRenderingContext
 
-function render( now: number ) {
+var lastTime: number
+var frame: number = 0
+
+function render() {
+    gl.clearColor( 0.5, lastTime % 1000 * 0.001, 0.0, 1.0 );
+    gl.clear( gl.COLOR_BUFFER_BIT )
+    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 )
+}
+
+function animationFrame( now: number ) {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
     gl.viewport( 0, 0, canvas.width, canvas.height )
-    const e = document.getElementById( 'viewport' )
-    if ( e )
-        e.innerHTML = canvas.width + 'x' + canvas.height
-    const vp = gl.getParameter( gl.VIEWPORT )
-    gl.clearColor( 0.5, now % 1000 * 0.001, 0.0, 1.0 );
-    gl.clear( gl.COLOR_BUFFER_BIT )
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 )
-    requestAnimationFrame( render )
+    frame++
+    if ( frame % 10 == 0 ) {
+        const e = document.getElementById( 'viewport' )
+        if ( e ) {
+            var h = canvas.width + 'x' + canvas.height
+            h += '<br/>' + Math.round( 1000 / ( now - lastTime ) ) + ' FPS'
+            e.innerHTML = h
+        }
+    }
+    lastTime = now
+    render()
+    requestAnimationFrame( animationFrame )
 }
 
 function initBuffers() {
@@ -96,5 +109,5 @@ function main() {
 
     initShaderProgram( vsSource, fsSource )
     initBuffers()
-    requestAnimationFrame( render )
+    requestAnimationFrame( animationFrame )
 }
