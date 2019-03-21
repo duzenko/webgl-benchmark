@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch a.html",
+            "name": "Firefox",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "webRoot": "${workspaceFolder}\\frontend",
-            "url": "http://localhost:3000/a.html"
+            "webRoot": "${workspaceFolder}\\public",
+            "url": "http://localhost:3000/",
         },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "url": "http://localhost:3000/a.html",
+            "webRoot": "${workspaceFolder}\\frontend"
+        }
     ]
 }
