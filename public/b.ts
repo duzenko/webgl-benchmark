@@ -1,7 +1,7 @@
 main();
 
 var canvas: HTMLCanvasElement
-var gl: WebGLRenderingContext
+var gl: WebGL2RenderingContext
 
 var lastTime: number
 var frame: number = 0
@@ -83,14 +83,16 @@ function main() {
     canvas = <HTMLCanvasElement>document.querySelector( "#glCanvas" )
     if ( !canvas )
         return
-    const _gl = canvas.getContext( "webgl" )
+    const _gl = canvas.getContext( "webgl2" )
     if ( !_gl ) {
         alert( "Unable to initialize WebGL. Your browser or machine may not support it." )
         return
     }
     gl = _gl
     if ( gl === null )
-        return;
+        return
+
+    var available_extensions = gl.getSupportedExtensions()
 
     const vsSource = `
         attribute vec4 aVertexPosition;
@@ -99,13 +101,13 @@ function main() {
         gl_Position = aVertexPosition;
         gl_Position.w = 3.0;
         }
-    `;
+    `
 
     const fsSource = `
         void main() {
             gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         }
-    `;
+    `
 
     initShaderProgram( vsSource, fsSource )
     initBuffers()
