@@ -27,7 +27,8 @@ function animationFrame( now: number ) {
     }
     lastTime = now
     render()
-    requestAnimationFrame( animationFrame )
+    if ( frame < 200 )
+        requestAnimationFrame( animationFrame )
 }
 
 function initBuffers() {
@@ -111,5 +112,12 @@ function main() {
 
     initShaderProgram( vsSource, fsSource )
     initBuffers()
+    let btn = document.getElementById( "btnStartTest" )
+    if ( btn )
+        btn.addEventListener( "click", ( e: Event ) => startTest() )
+    startTest()
+}
+
+function startTest() {
     requestAnimationFrame( animationFrame )
 }
