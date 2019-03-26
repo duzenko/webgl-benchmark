@@ -7,7 +7,7 @@ var lastTime: number
 var frame: number = 0
 
 function render() {
-    gl.clearColor( 0.5, lastTime % 1000 * 0.001, 0.0, 1.0 );
+    gl.clearColor( 0.41, lastTime % 1000 * 0.001, 0.0, 1.0 );
     gl.clear( gl.COLOR_BUFFER_BIT )
     gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 )
 }
@@ -92,8 +92,12 @@ function main() {
     gl = _gl
     if ( gl === null )
         return
-
-    var available_extensions = gl.getSupportedExtensions()
+    if ( gl ) {
+        var debugInfo = <WEBGL_debug_renderer_info>gl.getExtension( 'WEBGL_debug_renderer_info' )
+        var vendor = gl.getParameter( debugInfo.UNMASKED_VENDOR_WEBGL )
+        var renderer = gl.getParameter( debugInfo.UNMASKED_RENDERER_WEBGL )
+        console.log( renderer )
+    }
 
     const vsSource = `
         attribute vec4 aVertexPosition;

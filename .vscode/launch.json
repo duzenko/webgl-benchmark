@@ -9,7 +9,7 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "webRoot": "${workspaceFolder}\\public",
+            "webRoot": "${workspaceFolder}",
             "url": "http://localhost:3000/",
         },
         {
@@ -17,8 +17,8 @@
             "request": "launch",
             "name": "Attach to Chrome",
             "port": 9222,
-            "url": "http://localhost:3000/a.html",
-            "webRoot": "${workspaceFolder}\\frontend"
+            "url": "http://localhost:3000/",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }
