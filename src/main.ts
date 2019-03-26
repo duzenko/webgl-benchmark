@@ -10,15 +10,15 @@ var lastTime: number
 var frame: number = 0
 
 function render() {
-    gl.clearColor( 0.41, lastTime % 1000 * 0.001, 0.0, 1.0 );
+    gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
     gl.clear( gl.COLOR_BUFFER_BIT )
     gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 )
 }
 
 function animationFrame( now: number ) {
-    var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
-    canvas.width = 8192 //window.innerWidth
-    canvas.height = 8192 //window.innerHeight
+    // var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
     gl.viewport( 0, 0, canvas.width, canvas.height )
     if ( frame++ % 10 == 1 ) {
         const e = document.getElementById( 'viewport' )
