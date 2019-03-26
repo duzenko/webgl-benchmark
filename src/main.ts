@@ -1,4 +1,5 @@
 import * as shaders from "./shaders";
+import * as buffers from "./buffers";
 
 main();
 
@@ -15,11 +16,11 @@ function render() {
 }
 
 function animationFrame( now: number ) {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
+    canvas.width = 8192 //window.innerWidth
+    canvas.height = 8192 //window.innerHeight
     gl.viewport( 0, 0, canvas.width, canvas.height )
-    frame++
-    if ( frame % 10 == 0 ) {
+    if ( frame++ % 10 == 1 ) {
         const e = document.getElementById( 'viewport' )
         if ( e ) {
             var h = canvas.width + 'x' + canvas.height
@@ -31,24 +32,6 @@ function animationFrame( now: number ) {
     render()
     if ( frame < 200 )
         requestAnimationFrame( animationFrame )
-}
-
-function initBuffers() {
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, positionBuffer );
-    const positions = [
-        1.0, 1.0,
-        -1.0, 1.0,
-        1.0, -1.0,
-        -1.0, -1.0,
-    ];
-    gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( positions ), gl.STATIC_DRAW )
-
-    gl.vertexAttribPointer( 0, 2, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( 0 );
-    return {
-        position: positionBuffer,
-    };
 }
 
 function main() {
@@ -65,12 +48,11 @@ function main() {
         return
     if ( gl ) {
         var debugInfo = <WEBGL_debug_renderer_info>gl.getExtension( 'WEBGL_debug_renderer_info' )
-        var vendor = gl.getParameter( debugInfo.UNMASKED_VENDOR_WEBGL )
         var renderer = gl.getParameter( debugInfo.UNMASKED_RENDERER_WEBGL )
         console.log( renderer )
     }
 
-    initBuffers()
+    buffers.initBuffers( gl )
     shaders.initShaderPrograms( gl )
     let btn = document.getElementById( "btnStartTest" )
     if ( btn )
@@ -79,5 +61,6 @@ function main() {
 }
 
 function startTest() {
+    frame = 0
     requestAnimationFrame( animationFrame )
 }
