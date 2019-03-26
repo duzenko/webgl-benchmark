@@ -1,5 +1,6 @@
 import * as shaders from "./shaders";
 import * as buffers from "./buffers";
+import { loadTexture } from "./textures";
 
 main();
 
@@ -12,7 +13,7 @@ var frame: number = 0
 function render() {
     gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
     gl.clear( gl.COLOR_BUFFER_BIT )
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 )
+    gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 )
 }
 
 function animationFrame( now: number ) {
@@ -54,6 +55,7 @@ function main() {
 
     buffers.initBuffers( gl )
     shaders.initShaderPrograms( gl )
+    var texture = loadTexture( gl, 'images/pexels-photo-556416.jpeg' )
     let btn = document.getElementById( "btnStartTest" )
     if ( btn )
         btn.addEventListener( "click", ( e: Event ) => startTest() )
