@@ -60,6 +60,7 @@ function render() {
         shaders.shader.Size( v[index][2], v[index][3] )
         shaders.shader.Draw()
         shaders.shader.Brightness = index == 1 ? Math.sin( lastTime * 0.001 ) * .9 : 0
+        shaders.shader.Contrast = index == 0 ? Math.sin( lastTime * 0.001 ) * .9 + 1 : 1
     } )
 }
 
