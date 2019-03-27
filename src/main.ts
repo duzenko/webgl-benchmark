@@ -13,7 +13,7 @@ var frame: number = 0
 function render() {
     gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
     gl.clear( gl.COLOR_BUFFER_BIT )
-    gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 )
+    shaders.shader.Draw( 0, 0, 1, 1 )
 }
 
 function animationFrame( now: number ) {
@@ -55,7 +55,11 @@ function main() {
 
     buffers.initBuffers( gl )
     shaders.initShaderPrograms( gl )
-    var texture = loadTexture( gl, 'images/pexels-photo-556416.jpeg' )
+    var textures = [
+        'images/affair-anniversary-asad-1024975.jpg',
+        'images/Blue_jay_1482_-_2.jpg',
+        'images/pexels-photo-556416.jpeg',
+    ].map( s => loadTexture( gl, s ) )
     let btn = document.getElementById( "btnStartTest" )
     if ( btn )
         btn.addEventListener( "click", ( e: Event ) => startTest() )
