@@ -43,7 +43,8 @@ function main() {
 
 function startTest() {
     frame = 0
-    requestAnimationFrame( animationFrame )
+    if ( shaders.shader.handle )
+        requestAnimationFrame( animationFrame )
 }
 
 function render() {
@@ -58,9 +59,11 @@ function render() {
         gl.bindTexture( gl.TEXTURE_2D, t )
         shaders.shader.Center( v[index][0], v[index][1] )
         shaders.shader.Size( v[index][2], v[index][3] )
+        var x = Math.sin( lastTime * 0.002 )
+        shaders.shader.Saturation = index == 0 ? x * .9 + 1 : 1
+        shaders.shader.Brightness = index == 1 ? x * .6 : 0
+        shaders.shader.Contrast = index == 2 ? x * .9 + 1 : 1
         shaders.shader.Draw()
-        shaders.shader.Brightness = index == 1 ? Math.sin( lastTime * 0.001 ) * .9 : 0
-        shaders.shader.Contrast = index == 0 ? Math.sin( lastTime * 0.001 ) * .9 + 1 : 1
     } )
 }
 

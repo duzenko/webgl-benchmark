@@ -26,6 +26,10 @@ class RectShader {
         var loc = gl.getUniformLocation( this.handle, 'contrast' )
         gl.uniform1f( loc, value )
     }
+    set Saturation( value: number ) {
+        var loc = gl.getUniformLocation( this.handle, 'saturation' )
+        gl.uniform1f( loc, value )
+    }
 }
 
 const shader: RectShader = new RectShader()
@@ -80,11 +84,13 @@ function initShaderPrograms( _gl: WebGL2RenderingContext ) {
     const fsSource = `#version 300 es
         precision mediump float;
         uniform sampler2D uSampler;
-        uniform float brightness, contrast;
+        uniform float brightness, contrast, saturation;
         in vec4 texCoord;
         out vec4 FragColor;
         void main() {
             FragColor = texture(uSampler, texCoord.xy);
+            float b = dot(FragColor.rgb, vec3(1./3.));
+            FragColor.rgb = mix(vec3(b), FragColor.rgb, saturation );
             FragColor.rgb = .5 +(FragColor.rgb-.5)*contrast;
             FragColor.rgb += brightness;
         }
