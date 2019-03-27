@@ -7,12 +7,20 @@ class RectShader {
     constructor() {
         this.handle = 0
     }
-    Draw( x: number, y: number, w: number, h: number ) {
+    Draw() {
+        gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 )
+    }
+    Center( x: number, y: number ) {
         var loc = gl.getUniformLocation( this.handle, 'center' )
         gl.uniform2f( loc, x, y )
+    }
+    Size( w: number, h: number ) {
         var loc = gl.getUniformLocation( this.handle, 'size' )
         gl.uniform2f( loc, w, h )
-        gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 )
+    }
+    set Brightness( value: number ) {
+        var loc = gl.getUniformLocation( this.handle, 'brightness' )
+        gl.uniform1f( loc, value )
     }
 }
 
@@ -68,11 +76,12 @@ function initShaderPrograms( _gl: WebGL2RenderingContext ) {
     const fsSource = `#version 300 es
         precision mediump float;
         uniform sampler2D uSampler;
+        uniform float brightness;
         in vec4 texCoord;
         out vec4 FragColor;
         void main() {
-            FragColor = vec4(1.0, 1.0, 1.0, 1.0);
             FragColor = texture(uSampler, texCoord.xy);
+            FragColor.rgb += brightness;
         }
     `
 

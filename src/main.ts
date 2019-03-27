@@ -49,11 +49,17 @@ function startTest() {
 function render() {
     gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
     gl.clear( gl.COLOR_BUFFER_BIT )
-    const v = [[0, 0, .9, .9], [-.4, .4, .3, .4], [.4, .4, .3, .4]]
+    const v = [
+        [0, 0, .9, .9],
+        [-.4, .4, .3, .4],
+        [.4, .4, .3, .4]
+    ]
     textures.forEach( ( t, index ) => {
         gl.bindTexture( gl.TEXTURE_2D, t )
-        // @ts-ignore
-        shaders.shader.Draw( ...v[index] )
+        shaders.shader.Center( v[index][0], v[index][1] )
+        shaders.shader.Size( v[index][2], v[index][3] )
+        shaders.shader.Draw()
+        shaders.shader.Brightness = index == 1 ? Math.sin( lastTime * 0.001 ) * .9 : 0
     } )
 }
 
