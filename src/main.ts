@@ -2,41 +2,16 @@ import * as shaders from "./shaders";
 import * as buffers from "./buffers";
 import { loadTexture } from "./textures";
 
-main();
-
-var canvas: HTMLCanvasElement
 var gl: WebGL2RenderingContext
 
 var lastTime: number
 var frame: number = 0
+var textures: ( WebGLTexture | null )[] = [null, null]
 
-function render() {
-    gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
-    gl.clear( gl.COLOR_BUFFER_BIT )
-    shaders.shader.Draw( 0, 0, 1, 1 )
-}
-
-function animationFrame( now: number ) {
-    // var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    gl.viewport( 0, 0, canvas.width, canvas.height )
-    if ( frame++ % 10 == 1 ) {
-        const e = document.getElementById( 'viewport' )
-        if ( e ) {
-            var h = canvas.width + 'x' + canvas.height
-            h += '<br/>' + Math.round( 1000 / ( now - lastTime ) ) + ' FPS'
-            e.innerHTML = h
-        }
-    }
-    lastTime = now
-    render()
-    if ( frame < 200 )
-        requestAnimationFrame( animationFrame )
-}
+main()
 
 function main() {
-    canvas = <HTMLCanvasElement>document.querySelector( "#glCanvas" )
+    const canvas = <HTMLCanvasElement>document.querySelector( "#glCanvas" )
     if ( !canvas )
         return
     const _gl = canvas.getContext( "webgl2" )
@@ -55,11 +30,11 @@ function main() {
 
     buffers.initBuffers( gl )
     shaders.initShaderPrograms( gl )
-    var textures = [
+    textures = <WebGLTexture[]>[
         'images/affair-anniversary-asad-1024975.jpg',
         'images/Blue_jay_1482_-_2.jpg',
         'images/pexels-photo-556416.jpeg',
-    ].map( s => loadTexture( gl, s ) )
+    ].map( s => loadTexture( gl, s ) ).filter( t => t )
     let btn = document.getElementById( "btnStartTest" )
     if ( btn )
         btn.addEventListener( "click", ( e: Event ) => startTest() )
@@ -69,4 +44,34 @@ function main() {
 function startTest() {
     frame = 0
     requestAnimationFrame( animationFrame )
+}
+
+function render() {
+    gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
+    gl.clear( gl.COLOR_BUFFER_BIT )
+    const v = [[0, 0, .9, .9], [-.4, .4, .3, .4], [.4, .4, .3, .4]]
+    textures.forEach( ( t, index ) => {
+        gl.bindTexture( gl.TEXTURE_2D, t )
+        // @ts-ignore
+        shaders.shader.Draw( ...v[index] )
+    } )
+}
+
+function animationFrame( now: number ) {
+    // var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
+    gl.canvas.width = window.innerWidth
+    gl.canvas.height = window.innerHeight
+    gl.viewport( 0, 0, gl.canvas.width, gl.canvas.height )
+    if ( frame++ % 10 == 1 ) {
+        const e = document.getElementById( 'viewport' )
+        if ( e ) {
+            var h = gl.canvas.width + 'x' + gl.canvas.height
+            h += '<br/>' + Math.round( 1000 / ( now - lastTime ) ) + ' FPS'
+            e.innerHTML = h
+        }
+    }
+    lastTime = now
+    render()
+    if ( frame < 200 )
+        requestAnimationFrame( animationFrame )
 }
