@@ -12,24 +12,10 @@ class RectShader {
     constructor( url: string ) {
         this.handle = 0
         this.status = ShaderStatus.Loading
-        fetch( '/shaders/' + url + '.vs' ).then( response => {
-            return response.text()
-        } ).then( vsSource => {
-            const fsSource = `#version 300 es
-                precision mediump float;
-                uniform sampler2D uSampler;
-                uniform float brightness, contrast, saturation;
-                in vec4 texCoord;
-                out vec4 FragColor;
-                void main() {
-                    FragColor = texture(uSampler, texCoord.xy);
-                    float b = dot(FragColor.rgb, vec3(1./3.));
-                    FragColor.rgb = mix(vec3(b), FragColor.rgb, saturation );
-                    FragColor.rgb = .5 +(FragColor.rgb-.5)*contrast;
-                    FragColor.rgb += brightness;
-                }
-            `
-            this.handle = <WebGLShader>initShaderProgram( vsSource, fsSource )
+        fetch( '/shader?' + url ).then( response => {
+            return response.json()
+        } ).then( src => {
+            this.handle = <WebGLShader>initShaderProgram( src.vertex, src.fragment )
             this.status = this.handle == 0 ? ShaderStatus.Error : ShaderStatus.OK
         } )
     }
