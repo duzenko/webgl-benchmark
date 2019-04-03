@@ -1,6 +1,6 @@
-import * as shaders from "./shaders";
-import * as buffers from "./buffers";
-import { loadTexture } from "./textures";
+import * as shaders from "shaders"
+import * as buffers from "buffers"
+import { loadTexture } from "textures"
 
 var gl: WebGL2RenderingContext
 
@@ -43,7 +43,7 @@ function main() {
 
 function startTest() {
     frame = 0
-    if ( shaders.shader.handle )
+    if ( shaders.shader.status != shaders.ShaderStatus.Error )
         requestAnimationFrame( animationFrame )
 }
 
@@ -55,6 +55,8 @@ function render() {
         [-.4, .4, .3, .4],
         [.4, .4, .3, .4]
     ]
+    if ( shaders.shader.status != shaders.ShaderStatus.OK )
+        return
     textures.forEach( ( t, index ) => {
         gl.bindTexture( gl.TEXTURE_2D, t )
         shaders.shader.Center( v[index][0], v[index][1] )

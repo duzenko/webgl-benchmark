@@ -1,11 +1,37 @@
-export { shader, initShaderPrograms }
+export { shader, initShaderPrograms, ShaderStatus }
 
 var gl: WebGL2RenderingContext
 
+enum ShaderStatus {
+    Loading, Error, OK
+}
+
 class RectShader {
     handle: WebGLProgram
-    constructor() {
+    status: ShaderStatus
+    constructor( url: string ) {
         this.handle = 0
+        this.status = ShaderStatus.Loading
+        fetch( '/shaders/' + url + '.vs' ).then( response => {
+            return response.text()
+        } ).then( vsSource => {
+            const fsSource = `#version 300 es
+                precision mediump float;
+                uniform sampler2D uSampler;
+                uniform float brightness, contrast, saturation;
+                in vec4 texCoord;
+                out vec4 FragColor;
+                void main() {
+                    FragColor = texture(uSampler, texCoord.xy);
+                    float b = dot(FragColor.rgb, vec3(1./3.));
+                    FragColor.rgb = mix(vec3(b), FragColor.rgb, saturation );
+                    FragColor.rgb = .5 +(FragColor.rgb-.5)*contrast;
+                    FragColor.rgb += brightness;
+                }
+            `
+            this.handle = <WebGLShader>initShaderProgram( vsSource, fsSource )
+            this.status = this.handle == 0 ? ShaderStatus.Error : ShaderStatus.OK
+        } )
     }
     Draw() {
         gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 )
@@ -32,7 +58,7 @@ class RectShader {
     }
 }
 
-const shader: RectShader = new RectShader()
+var shader: RectShader
 
 function loadShader( type: GLenum, source: string ) {
     const shader = gl.createShader( type );
@@ -67,34 +93,5 @@ function initShaderProgram( vsSource: string, fsSource: string ) {
 
 function initShaderPrograms( _gl: WebGL2RenderingContext ) {
     gl = _gl
-    const vsSource = `#version 300 es
-        uniform vec2 center, size;
-        out vec4 texCoord;
-        void main() {
-            float a = radians(float(gl_VertexID * 90 + 45));
-            gl_Position.x = sin(a);
-            gl_Position.y = cos(a);
-            texCoord = sign(gl_Position)*-0.5+0.5;
-            gl_Position.xy *= sqrt(2.0)*size;
-            gl_Position.w = 1.0;
-            gl_Position.xy += center;
-        }
-    `
-
-    const fsSource = `#version 300 es
-        precision mediump float;
-        uniform sampler2D uSampler;
-        uniform float brightness, contrast, saturation;
-        in vec4 texCoord;
-        out vec4 FragColor;
-        void main() {
-            FragColor = texture(uSampler, texCoord.xy);
-            float b = dot(FragColor.rgb, vec3(1./3.));
-            FragColor.rgb = mix(vec3(b), FragColor.rgb, saturation );
-            FragColor.rgb = .5 +(FragColor.rgb-.5)*contrast;
-            FragColor.rgb += brightness;
-        }
-    `
-
-    shader.handle = <WebGLShader>initShaderProgram( vsSource, fsSource )
+    shader = new RectShader( 'rect' )
 }
