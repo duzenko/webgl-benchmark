@@ -1,8 +1,8 @@
-import * as shaders from "shaders"
+import * as shaders from "shaders/shaders"
+import { webgl2, set_webgl2 } from "globals"
+import { rectShader } from "shaders/rect"
 import * as buffers from "buffers"
 import { loadTexture } from "textures"
-
-var gl: WebGL2RenderingContext
 
 var lastTime: number
 var frame: number = 0
@@ -19,22 +19,18 @@ function main() {
         alert( "Unable to initialize WebGL. Your browser or machine may not support it." )
         return
     }
-    gl = _gl
-    if ( gl === null )
-        return
-    if ( gl ) {
-        var debugInfo = <WEBGL_debug_renderer_info>gl.getExtension( 'WEBGL_debug_renderer_info' )
-        var renderer = gl.getParameter( debugInfo.UNMASKED_RENDERER_WEBGL )
-        console.log( renderer )
-    }
+    set_webgl2( _gl )
+    var debugInfo = <WEBGL_debug_renderer_info>webgl2.getExtension( 'WEBGL_debug_renderer_info' )
+    var renderer = webgl2.getParameter( debugInfo.UNMASKED_RENDERER_WEBGL )
+    console.log( renderer )
 
-    buffers.initBuffers( gl )
-    shaders.initShaderPrograms( gl )
+    buffers.initBuffers( webgl2 )
+    rectShader.CheckCompile()
     textures = <WebGLTexture[]>[
         'images/affair-anniversary-asad-1024975.jpg',
         'images/Blue_jay_1482_-_2.jpg',
         'images/pexels-photo-556416.jpeg',
-    ].map( s => loadTexture( gl, s ) ).filter( t => t )
+    ].map( s => loadTexture( s ) ).filter( t => t )
     let btn = document.getElementById( "btnStartTest" )
     if ( btn )
         btn.addEventListener( "click", ( e: Event ) => startTest() )
@@ -43,41 +39,40 @@ function main() {
 
 function startTest() {
     frame = 0
-    if ( shaders.shader.status != shaders.ShaderStatus.Error )
-        requestAnimationFrame( animationFrame )
+    requestAnimationFrame( animationFrame )
 }
 
 function render() {
-    gl.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
-    gl.clear( gl.COLOR_BUFFER_BIT )
+    webgl2.clearColor( 0.41, .5 + .5 * Math.sin( lastTime * 0.001 ), 0.0, 1.0 );
+    webgl2.clear( WebGL2RenderingContext.COLOR_BUFFER_BIT )
     const v = [
         [0, 0, .9, .9],
         [-.4, .4, .3, .4],
         [.4, .4, .3, .4]
     ]
-    if ( shaders.shader.status != shaders.ShaderStatus.OK )
+    if ( rectShader.state != shaders.ShaderState.OK )
         return
     textures.forEach( ( t, index ) => {
-        gl.bindTexture( gl.TEXTURE_2D, t )
-        shaders.shader.Center( v[index][0], v[index][1] )
-        shaders.shader.Size( v[index][2], v[index][3] )
+        webgl2.bindTexture( WebGL2RenderingContext.TEXTURE_2D, t )
+        rectShader.Center( v[index][0], v[index][1] )
+        rectShader.Size( v[index][2], v[index][3] )
         var x = Math.sin( lastTime * 0.002 )
-        shaders.shader.Saturation = index == 0 ? x * .9 + 1 : 1
-        shaders.shader.Brightness = index == 1 ? x * .6 : 0
-        shaders.shader.Contrast = index == 2 ? x * .9 + 1 : 1
-        shaders.shader.Draw()
+        rectShader.Saturation = index == 0 ? x * .9 + 1 : 1
+        rectShader.Brightness = index == 1 ? x * .6 : 0
+        rectShader.Contrast = index == 2 ? x * .9 + 1 : 1
+        rectShader.Draw()
     } )
 }
 
 function animationFrame( now: number ) {
     // var maxViewPort = gl.getParameter( gl.MAX_VIEWPORT_DIMS )
-    gl.canvas.width = window.innerWidth
-    gl.canvas.height = window.innerHeight
-    gl.viewport( 0, 0, gl.canvas.width, gl.canvas.height )
+    webgl2.canvas.width = window.innerWidth
+    webgl2.canvas.height = window.innerHeight
+    webgl2.viewport( 0, 0, webgl2.canvas.width, webgl2.canvas.height )
     if ( frame++ % 10 == 1 ) {
         const e = document.getElementById( 'viewport' )
         if ( e ) {
-            var h = gl.canvas.width + 'x' + gl.canvas.height
+            var h = webgl2.canvas.width + 'x' + webgl2.canvas.height
             h += '<br/>' + Math.round( 1000 / ( now - lastTime ) ) + ' FPS'
             e.innerHTML = h
         }
