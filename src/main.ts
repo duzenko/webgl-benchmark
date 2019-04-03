@@ -1,6 +1,7 @@
 import * as shaders from "shaders/shaders"
 import { webgl2, set_webgl2 } from "globals"
 import { rectShader } from "shaders/rect"
+import { spiralShader } from "shaders/spiral"
 import * as buffers from "buffers"
 import { loadTexture } from "textures"
 
@@ -25,7 +26,6 @@ function main() {
     console.log( renderer )
 
     buffers.initBuffers( webgl2 )
-    rectShader.CheckCompile()
     textures = <WebGLTexture[]>[
         'images/affair-anniversary-asad-1024975.jpg',
         'images/Blue_jay_1482_-_2.jpg',
@@ -50,18 +50,18 @@ function render() {
         [-.4, .4, .3, .4],
         [.4, .4, .3, .4]
     ]
-    if ( rectShader.state != shaders.ShaderState.OK )
-        return
-    textures.forEach( ( t, index ) => {
-        webgl2.bindTexture( WebGL2RenderingContext.TEXTURE_2D, t )
-        rectShader.Center( v[index][0], v[index][1] )
-        rectShader.Size( v[index][2], v[index][3] )
-        var x = Math.sin( lastTime * 0.002 )
-        rectShader.Saturation = index == 0 ? x * .9 + 1 : 1
-        rectShader.Brightness = index == 1 ? x * .6 : 0
-        rectShader.Contrast = index == 2 ? x * .9 + 1 : 1
-        rectShader.Draw()
-    } )
+    if ( rectShader.Use() )
+        textures.forEach( ( t, index ) => {
+            webgl2.bindTexture( WebGL2RenderingContext.TEXTURE_2D, t )
+            rectShader.Center( v[index][0], v[index][1] )
+            rectShader.Size( v[index][2], v[index][3] )
+            var x = Math.sin( lastTime * 0.002 )
+            rectShader.Saturation = index == 0 ? x * .9 + 1 : 1
+            rectShader.Brightness = index == 1 ? x * .6 : 0
+            rectShader.Contrast = index == 2 ? x * .9 + 1 : 1
+            rectShader.Draw()
+        } )
+    spiralShader.Draw()
 }
 
 function animationFrame( now: number ) {

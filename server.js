@@ -6,8 +6,10 @@ const app = express()
 const port = 8081
 
 app.get('/shader', function (req, res) {
-    var vertex = fs.readFileSync(__dirname + '/shaders/rect.vs', 'utf8')
-    var fragment = fs.readFileSync(__dirname + '/shaders/rect.fs', 'utf8')
+    var name = req.query.name
+    var vertex = fs.readFileSync(__dirname + '/shaders/' + name + '.vs', 'utf8')
+    var fragment = fs.readFileSync(__dirname + '/shaders/' + name + '.fs', 'utf8')
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
     res.send({ vertex, fragment })
 })
 app.use(express.static('public'))
